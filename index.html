@@ -807,22 +807,22 @@
       'MAT_Soga':                 { color: 0x584c34, roughness: 0.92, metalness: 0.0 },
       'MAT_Vidrio_Sucio':         { color: 0x142028, roughness: 0.30, metalness: 0.10, transparent: true, opacity: 0.75 },
       
-      // Cautivos y Ropa Civil 1970s
-      'MAT_Interior_Capucha':     { color: 0x050505, roughness: 1.00, metalness: 0.0 },
-      'MAT_Hilo_Costura':         { color: 0x403220, roughness: 0.92, metalness: 0.0 },
-      'MAT_Piel_Sucia':           { color: 0x7c604c, roughness: 0.60, metalness: 0.0 },
-      'MAT_Camisa_Crema':         { color: 0x88806e, roughness: 0.86, metalness: 0.0 },
-      'MAT_Pantalon_Oscuro':      { color: 0x262c34, roughness: 0.85, metalness: 0.0 },
-      'MAT_Pulover_Gris':         { color: 0x3c4046, roughness: 0.92, metalness: 0.0 },
-      'MAT_Pantalon_Marron':      { color: 0x3c3024, roughness: 0.88, metalness: 0.0 },
-      'MAT_Camisa_Beige':         { color: 0x6e6654, roughness: 0.86, metalness: 0.0 },
-      'MAT_Pantalon_Azul':        { color: 0x222a3c, roughness: 0.85, metalness: 0.0 },
-      'MAT_Pulover_Verde':        { color: 0x2a382c, roughness: 0.92, metalness: 0.0 },
-      'MAT_Jean_Gastado':         { color: 0x324254, roughness: 0.88, metalness: 0.0 },
-      'MAT_Camiseta_Sucia':       { color: 0x6c6656, roughness: 0.88, metalness: 0.0 },
-      'MAT_Pantalon_Gris':        { color: 0x34383c, roughness: 0.88, metalness: 0.0 },
-      'MAT_Zapato_Cuero':         { color: 0x201c18, roughness: 0.50, metalness: 0.0 },
-      'MAT_Zapato_Marron':        { color: 0x2e2014, roughness: 0.50, metalness: 0.0 },
+      // Cautivos y Ropa Civil 1970s (tonos apagados testimoniales estilo Garage Olimpo)
+      'MAT_Interior_Capucha':     { color: 0x040404, roughness: 1.00, metalness: 0.0 },
+      'MAT_Hilo_Costura':         { color: 0x34281c, roughness: 0.95, metalness: 0.0 },
+      'MAT_Piel_Sucia':           { color: 0x5e4534, roughness: 0.65, metalness: 0.0 },
+      'MAT_Camisa_Crema':         { color: 0x6e6656, roughness: 0.92, metalness: 0.0 },
+      'MAT_Pantalon_Oscuro':      { color: 0x161a20, roughness: 0.90, metalness: 0.0 },
+      'MAT_Pulover_Gris':         { color: 0x2e343a, roughness: 0.94, metalness: 0.0 },
+      'MAT_Pantalon_Marron':      { color: 0x2c2218, roughness: 0.90, metalness: 0.0 },
+      'MAT_Camisa_Beige':         { color: 0x564e3e, roughness: 0.92, metalness: 0.0 },
+      'MAT_Pantalon_Azul':        { color: 0x161c28, roughness: 0.90, metalness: 0.0 },
+      'MAT_Pulover_Verde':        { color: 0x20281e, roughness: 0.94, metalness: 0.0 },
+      'MAT_Jean_Gastado':         { color: 0x242c38, roughness: 0.90, metalness: 0.0 },
+      'MAT_Camiseta_Sucia':       { color: 0x5a5444, roughness: 0.92, metalness: 0.0 },
+      'MAT_Pantalon_Gris':        { color: 0x282a2c, roughness: 0.90, metalness: 0.0 },
+      'MAT_Zapato_Cuero':         { color: 0x120e0a, roughness: 0.55, metalness: 0.05 },
+      'MAT_Zapato_Marron':        { color: 0x22160e, roughness: 0.55, metalness: 0.05 },
       
       // Props
       'MAT_Flecha_Lona':          { color: 0x6e6858, roughness: 0.90, metalness: 0.0 },
@@ -1044,15 +1044,28 @@
               return;
             }
 
-            // A. Capuchas de arpillera (Burlap - fabric_pattern_07 / Fabric048)
+            // A. Capuchas de arpillera (Burlap - tejido tosco con textura visible)
             if (mName.includes('Arpillera') || mName.includes('Capucha') || nodeName.includes('Capucha')) {
               m.map = texBurlap.map;
               m.normalMap = texBurlap.normalMap;
               m.roughnessMap = texBurlap.roughnessMap;
               m.roughness = 0.98;
               m.metalness = 0.0;
-              m.normalScale.set(1.5, 1.5);
-              m.color.setHex(0xffffff);
+              m.normalScale.set(1.6, 1.6);
+              m.color.setHex(0xd4c6a6);
+              m.needsUpdate = true;
+            }
+            // A.1 Ropa Civil de Cautivos (textura de tela mate con microrrelieve)
+            else if (mName.includes('Camisa') || mName.includes('Pantalon') || mName.includes('Pulover') || mName.includes('Jean') || mName.includes('Camiseta')) {
+              m.normalMap = texCanvas.normalMap;
+              m.roughnessMap = texCanvas.roughnessMap;
+              m.normalScale.set(0.65, 0.65);
+              m.roughness = 0.92;
+              m.metalness = 0.0;
+              let matched = materialPalette[mName];
+              if (matched) {
+                m.color.setHex(matched.color);
+              }
               m.needsUpdate = true;
             }
             // B. Madera astillada / Tablones viejos (weathered_planks / Wood049)
