@@ -48,7 +48,7 @@
       z-index: 1;
     }
 
-    /* Vignette & Gritty Film Grain Overlay */
+    /* Vignette & Gritty Film Grain Overlay (complementario a post-procesado WebGL) */
     .cinematic-overlay {
       position: absolute;
       top: 0;
@@ -57,20 +57,7 @@
       height: 100%;
       pointer-events: none;
       z-index: 5;
-      background: radial-gradient(circle at center, transparent 40%, rgba(3, 5, 8, 0.82) 95%);
-      box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.9);
-    }
-
-    .cinematic-overlay::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 2px);
-      opacity: 0.35;
-      pointer-events: none;
+      box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.85);
     }
 
     /* HUD Header */
@@ -148,137 +135,186 @@
     }
 
     .cam-btn:hover {
-      background: rgba(212, 139, 59, 0.18);
+      background: rgba(35, 45, 58, 0.95);
+      color: #eae5d9;
       border-color: var(--accent-amber);
-      color: #fff;
     }
 
     .cam-btn.active {
       background: var(--accent-amber);
-      color: #0b0f14;
+      color: #0d1217;
       font-weight: 700;
-      border-color: #f7b368;
-      box-shadow: 0 0 14px rgba(212, 139, 59, 0.45);
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 14px rgba(212, 139, 59, 0.5);
     }
 
-    .cam-btn span.num {
-      display: inline-block;
-      font-size: 0.72rem;
-      opacity: 0.75;
-    }
-
-    /* Quick Control Action Tools (Right Top) */
-    .hud-tools {
+    /* Top-Right Control Bar */
+    .top-controls {
       position: absolute;
       top: 18px;
       right: 24px;
       z-index: 10;
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     .tool-btn {
-      background: rgba(8, 12, 16, 0.85);
+      background: rgba(12, 17, 23, 0.88);
       border: 1px solid var(--border-dark);
-      color: var(--paper-cream);
-      padding: 7px 12px;
+      color: #a8a090;
+      padding: 6px 12px;
+      font-size: 0.78rem;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.80rem;
-      border-radius: 3px;
       cursor: pointer;
+      border-radius: 3px;
       backdrop-filter: blur(6px);
       transition: all 0.2s;
     }
 
     .tool-btn:hover {
+      color: #eae5d9;
       border-color: var(--accent-amber);
-      color: #fff;
     }
 
     .tool-btn.active {
-      background: rgba(212, 139, 59, 0.25);
-      border-color: var(--accent-amber);
-      color: #f7b368;
+      background: var(--accent-green);
+      color: #fff;
+      border-color: #728a61;
     }
 
-    /* Interactive Dossier Modal / Drawer */
+    /* Dossier Card / Modal de Evidencia */
     .dossier-card {
       position: absolute;
-      top: 90px;
-      right: 24px;
-      width: 320px;
-      background: rgba(11, 15, 20, 0.94);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.92);
+      width: 440px;
+      max-width: 90vw;
+      background: rgba(14, 18, 22, 0.96);
       border: 1px solid var(--border-dark);
-      border-left: 3px solid var(--accent-amber);
-      padding: 18px;
+      border-left: 4px solid var(--accent-amber);
+      padding: 24px;
       z-index: 20;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
       backdrop-filter: blur(12px);
-      border-radius: 3px;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.9);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
-      transform: translateX(115%);
       opacity: 0;
       pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .dossier-card.visible {
-      transform: translateX(0);
       opacity: 1;
       pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .dossier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(212, 139, 59, 0.2);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
     }
 
     .dossier-tag {
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       color: var(--accent-amber);
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 4px;
+    }
+
+    .dossier-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .dossier-close:hover {
+      color: #fff;
     }
 
     .dossier-title {
       font-family: 'Courier Prime', monospace;
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       font-weight: 700;
-      color: #fff;
+      color: #eae5d9;
       margin-bottom: 10px;
-      line-height: 1.25;
     }
 
     .dossier-body {
-      font-size: 0.82rem;
-      color: #b8b3a5;
+      font-size: 0.88rem;
+      color: #b5ad9b;
       line-height: 1.5;
-      margin-bottom: 14px;
     }
 
-    .dossier-close {
-      display: inline-block;
-      font-size: 0.74rem;
+    .dossier-meta {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(212, 139, 59, 0.2);
+      font-size: 0.72rem;
       color: var(--text-muted);
-      cursor: pointer;
-      text-decoration: underline;
+      display: flex;
+      justify-content: space-between;
     }
 
-    .dossier-close:hover {
-      color: var(--accent-amber);
+    /* Historical Time Stamp */
+    .timestamp-box {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      z-index: 10;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      letter-spacing: 1px;
+      line-height: 1.4;
+    }
+
+    .timestamp-box span {
+      color: #b8b09f;
+    }
+
+    /* Interactive Hint */
+    .interaction-hint {
+      position: absolute;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-size: 0.76rem;
+      color: #928b7b;
+      letter-spacing: 1px;
+      pointer-events: none;
+      background: rgba(10, 14, 18, 0.7);
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 139, 59, 0.15);
+      animation: pulse 2.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 0.95; }
     }
 
     /* Loading Screen */
     #loader {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: #05080c;
+      background-color: #06090d;
       z-index: 100;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.8s ease, visibility 0.8s;
-      padding: 24px;
-      text-align: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
     #loader.hidden {
@@ -288,35 +324,37 @@
 
     .loader-stamp {
       font-family: 'Teko', sans-serif;
-      font-size: 1.6rem;
+      font-size: 1.8rem;
+      color: var(--accent-amber);
       letter-spacing: 4px;
-      color: #0b0f14;
-      background-color: var(--accent-amber);
-      padding: 4px 18px;
-      margin-bottom: 20px;
-      font-weight: 600;
+      margin-bottom: 8px;
     }
 
     .loader-title {
       font-family: 'Courier Prime', monospace;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       color: #eae5d9;
-      margin-bottom: 8px;
-      letter-spacing: 1.5px;
+      margin-bottom: 24px;
+      text-align: center;
     }
 
     .loader-quote {
-      font-size: 0.85rem;
-      color: #727c6e;
-      max-width: 480px;
-      margin-bottom: 28px;
+      font-family: 'Courier Prime', monospace;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: #7d8579;
+      max-width: 520px;
+      text-align: center;
+      margin-bottom: 32px;
       line-height: 1.5;
+      padding: 0 20px;
     }
 
     .loader-bar-wrap {
-      width: 260px;
+      width: 320px;
+      max-width: 80vw;
       height: 4px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 2px;
       overflow: hidden;
       margin-bottom: 12px;
@@ -330,23 +368,13 @@
     }
 
     .loader-status {
-      font-size: 0.76rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: #8c8574;
       letter-spacing: 1px;
-    }
-
-    /* Mobile adjustments */
-    @media (max-width: 768px) {
-      .hud-header { top: 12px; left: 14px; }
-      .title-main { font-size: 1.15rem; }
-      .camera-switcher { bottom: 14px; padding: 6px; }
-      .cam-btn { padding: 6px 10px; font-size: 0.74rem; }
-      .dossier-card { width: calc(100vw - 28px); right: 14px; top: auto; bottom: 80px; }
     }
   </style>
 
-  <!-- Import maps polyfill for ES modules -->
-  <script async src="https://ga.jspm.io/npm:es-module-shims@1.10.1/dist/es-module-shims.js"></script>
+  <!-- Import Maps for Three.js ES Modules -->
   <script type="importmap">
   {
     "imports": {
@@ -365,34 +393,58 @@
 
   <!-- HUD Header -->
   <div class="hud-header">
-    <div class="classification-tag">ACTO I: EL TRASLADO // 1976</div>
-    <div class="title-main">LA ESCENA 1: EL TRASLADO</div>
-    <div class="title-sub">CAMINO RURAL CLANDESTINO — PROVINCIA DE BUENOS AIRES</div>
+    <div class="classification-tag">ACTO I // EL TRASLADO</div>
+    <h1 class="title-main">CAMIÓN MILITAR 1970s</h1>
+    <p class="title-sub">CAMINO RURAL CLANDESTINO // NOVIEMBRE DE 1976</p>
   </div>
 
-  <!-- Tools (Audio, Free Cam, Fullscreen) -->
-  <div class="hud-tools">
-    <button id="btn-audio" class="tool-btn">🔊 AUDIO: OFF</button>
-    <button id="btn-fs" class="tool-btn">⛶ PANTALLA COMPLETA</button>
+  <!-- Top Right Controls -->
+  <div class="top-controls">
+    <button id="btn-audio" class="tool-btn" title="Alternar audio ambiental diegético">🔊 AUDIO: OFF</button>
+    <button id="btn-fs" class="tool-btn" title="Pantalla completa">⛶ PANTALLA COMPLETA</button>
   </div>
 
-  <!-- Director Camera Navigation Buttons -->
+  <!-- Camera Switcher -->
   <div class="camera-switcher">
-    <button class="cam-btn active" data-cam="master"><span class="num">01</span> MASTER CINEMÁTICA</button>
-    <button class="cam-btn" data-cam="hero"><span class="num">02</span> CAUTIVO HERO</button>
-    <button class="cam-btn" data-cam="interior"><span class="num">03</span> INTERIOR CAJA</button>
-    <button class="cam-btn" data-cam="props"><span class="num">04</span> INSPECCIÓN FLECHA</button>
-    <button class="cam-btn" data-cam="free"><span class="num">05</span> MODO LIBRE 360°</button>
+    <button class="cam-btn active" data-cam="master">
+      <span>🎬</span> VISTA GENERAL
+    </button>
+    <button class="cam-btn" data-cam="hero">
+      <span>👤</span> CAUTIVO HERO
+    </button>
+    <button class="cam-btn" data-cam="interior">
+      <span>📦</span> INTERIOR DE CAJA
+    </button>
+    <button class="cam-btn" data-cam="props">
+      <span>🔍</span> INSPECCIÓN PROPS
+    </button>
+    <button class="cam-btn" data-cam="free">
+      <span>🕹️</span> MODO LIBRE
+    </button>
   </div>
 
-  <!-- Historical Interactive Dossier Drawer -->
+  <!-- Interaction Hint -->
+  <div class="interaction-hint">HAZ CLIC EN LOS OBJETOS O CAUTIVOS PARA INSPECCIONAR ARCHIVOS</div>
+
+  <!-- Historical Timestamp Box -->
+  <div class="timestamp-box">
+    OPERATIVO: <span>ZONA IV / RUTA DE TIERRA</span><br>
+    CONDICIÓN: <span>LLUVIA RECIENTE / NIEBLA RASANTE</span><br>
+    HORA: <span>03:42 AM</span>
+  </div>
+
+  <!-- Dossier Card Modal -->
   <div id="dossier-card" class="dossier-card">
-    <div id="dossier-tag" class="dossier-tag">ITEM HISTÓRICO // EVIDENCIA #01</div>
-    <div id="dossier-title" class="dossier-title">ZAPATILLA DE LONA 'FLECHA'</div>
-    <div id="dossier-body" class="dossier-body">
-      Zapatilla de lona cruda con vira blanca y suela de caucho vulcanizado, calzado civil masivo en la juventud argentina de los años 70. Abandonada en las tablas de la caja de carga durante el traslado forzado.
+    <div class="dossier-header">
+      <span id="dossier-tag" class="dossier-tag">EVIDENCIA #01</span>
+      <button id="dossier-close" class="dossier-close">&times;</button>
     </div>
-    <div class="dossier-close" id="dossier-close">CERRAR INFORME [ESC]</div>
+    <h2 id="dossier-title" class="dossier-title">TÍTULO DEL ARCHIVO</h2>
+    <p id="dossier-body" class="dossier-body">Descripción técnica e histórica del elemento seleccionado...</p>
+    <div class="dossier-meta">
+      <span>ESTADO: CONFISCADO</span>
+      <span>ORIGEN: ARCHIVO NACIONAL DE LA MEMORIA</span>
+    </div>
   </div>
 
   <!-- Loading Screen -->
@@ -403,7 +455,7 @@
     <div class="loader-bar-wrap">
       <div id="loader-bar" class="loader-bar"></div>
     </div>
-    <div id="loader-status" class="loader-status">CARGANDO ENTORNO HISTÓRICO 3D...</div>
+    <div id="loader-status" class="loader-status">CARGANDO PIPELINE CINEMÁTICO PBR...</div>
   </div>
 
   <!-- Application Logic -->
@@ -411,6 +463,13 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
     import gsap from 'gsap';
 
     // ------------------------------------------------------------------------
@@ -418,18 +477,19 @@
     // ------------------------------------------------------------------------
     const container = document.getElementById('webgl-container');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x060a10);
-    scene.fog = new THREE.FogExp2(0x0b1118, 0.026);
+    
+    // Niebla volumétrica baja (Volumetric Fog / FogExp2) #0a0d12
+    scene.background = new THREE.Color(0x0a0d12);
+    scene.fog = new THREE.FogExp2(0x0a0d12, 0.022);
 
     const camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 450);
-    // Posicion inicial: Master Cinematic (X=2.85, Y=1.48, Z=8.60)
     camera.position.set(2.85, 1.48, 8.60);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.15;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
@@ -444,29 +504,436 @@
     controls.update();
 
     // ------------------------------------------------------------------------
-    // Cinematic Director Cameras (Converted to Three.js Y-up coordinates)
+    // 1. HDRI Rural Nocturno (scene.environment)
+    // ------------------------------------------------------------------------
+    const rgbeLoader = new RGBELoader();
+    rgbeLoader.load(
+      './moonlit_night.hdr',
+      (hdrTexture) => {
+        hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = hdrTexture;
+        console.log('HDRI nocturno rural cargado correctamente');
+      },
+      undefined,
+      (err) => {
+        console.warn('Fallback: Generando mapa de entorno HDRI procedural nocturno:', err);
+        const pmremGen = new THREE.PMREMGenerator(renderer);
+        pmremGen.compileEquirectangularShader();
+        const skyCanvas = document.createElement('canvas');
+        skyCanvas.width = 512;
+        skyCanvas.height = 256;
+        const sCtx = skyCanvas.getContext('2d');
+        const sGrad = sCtx.createLinearGradient(0, 0, 0, 256);
+        sGrad.addColorStop(0, '#060a12');
+        sGrad.addColorStop(0.4, '#0b131e');
+        sGrad.addColorStop(0.8, '#131920');
+        sGrad.addColorStop(1, '#0a0d12');
+        sCtx.fillStyle = sGrad;
+        sCtx.fillRect(0, 0, 512, 256);
+        const skyTex = new THREE.CanvasTexture(skyCanvas);
+        skyTex.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = pmremGen.fromEquirectangular(skyTex).texture;
+      }
+    );
+
+    // ------------------------------------------------------------------------
+    // 2. Iluminación Calibrada de Época
+    // ------------------------------------------------------------------------
+    // Dirección lunar fría y desaturada (#8faac9), intensidad baja (0.35)
+    const moonLight = new THREE.DirectionalLight(0x8faac9, 0.38);
+    moonLight.position.set(16, 32, -18);
+    moonLight.castShadow = true;
+    moonLight.shadow.mapSize.width = 2048;
+    moonLight.shadow.mapSize.height = 2048;
+    moonLight.shadow.camera.near = 1;
+    moonLight.shadow.camera.far = 120;
+    moonLight.shadow.camera.left = -25;
+    moonLight.shadow.camera.right = 25;
+    moonLight.shadow.camera.top = 25;
+    moonLight.shadow.camera.bottom = -25;
+    moonLight.shadow.bias = -0.0002;
+    moonLight.shadow.radius = 2.5; // Soft PCF shadow filtering
+    scene.add(moonLight);
+
+    // Relleno nocturno sutil para penumbra testimonial
+    const ambNight = new THREE.AmbientLight(0x0a0e14, 0.22);
+    scene.add(ambNight);
+
+    // Faros del camión (luz cálida incandescente de los 70s)
+    const headLeft = new THREE.SpotLight(0xffdfa8, 16, 55, Math.PI / 4.2, 0.65, 1.6);
+    headLeft.position.set(-0.53, 1.40, -3.20);
+    headLeft.target.position.set(-0.53, 0.40, -35);
+    scene.add(headLeft);
+    scene.add(headLeft.target);
+
+    const headRight = new THREE.SpotLight(0xffdfa8, 16, 55, Math.PI / 4.2, 0.65, 1.6);
+    headRight.position.set(0.53, 1.40, -3.20);
+    headRight.target.position.set(0.53, 0.40, -35);
+    scene.add(headRight);
+    scene.add(headRight.target);
+
+    // Luces rojas traseras iluminando barro y ruedas
+    const tailL = new THREE.PointLight(0xff1808, 2.2, 5.5, 2.0);
+    tailL.position.set(-0.78, 0.90, 2.92);
+    scene.add(tailL);
+
+    const tailR = new THREE.PointLight(0xff1808, 2.2, 5.5, 2.0);
+    tailR.position.set(0.78, 0.90, 2.92);
+    scene.add(tailR);
+
+    // Linterna militar en "L" en el piso de la caja:
+    // Tinte tungsteno sucio (#c99a4e), atenuación cuadrática real (decay = 2.0) y cono difuso
+    const flashLight = new THREE.SpotLight(0xc99a4e, 10.5, 9.5, Math.PI / 3.2, 0.75, 2.0);
+    flashLight.position.set(0.68, 1.34, 2.78);
+    flashLight.target.position.set(0.20, 1.24, 2.45);
+    flashLight.castShadow = true;
+    flashLight.shadow.mapSize.width = 1024;
+    flashLight.shadow.mapSize.height = 1024;
+    flashLight.shadow.bias = -0.0004;
+    flashLight.shadow.radius = 2.0;
+    scene.add(flashLight);
+    scene.add(flashLight.target);
+
+    // Resplandor distante de sodio del centro militar
+    const outpostGlow = new THREE.PointLight(0xff7a18, 38, 95, 1.8);
+    outpostGlow.position.set(-24, 7.5, -74);
+    scene.add(outpostGlow);
+
+    // ------------------------------------------------------------------------
+    // 3. Generador de Texturas PBR Procedurales (Normal, Roughness, Albedo)
+    // ------------------------------------------------------------------------
+    function createNormalFromHeight(width, height, heightData, strength = 2.5) {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      const imgData = ctx.createImageData(width, height);
+      const data = imgData.data;
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const x0 = (x - 1 + width) % width;
+          const x1 = (x + 1) % width;
+          const y0 = (y - 1 + height) % height;
+          const y1 = (y + 1) % height;
+
+          const hL = heightData[y * width + x0];
+          const hR = heightData[y * width + x1];
+          const hD = heightData[y0 * width + x];
+          const hU = heightData[y1 * width + x];
+
+          let dx = (hR - hL) * strength;
+          let dy = (hU - hD) * strength;
+          let dz = 1.0;
+
+          const len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          dx /= len; dy /= len; dz /= len;
+
+          const idx = (y * width + x) * 4;
+          data[idx + 0] = Math.floor((dx * 0.5 + 0.5) * 255);
+          data[idx + 1] = Math.floor((dy * 0.5 + 0.5) * 255);
+          data[idx + 2] = Math.floor((dz * 0.5 + 0.5) * 255);
+          data[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    }
+
+    // A. Burlap (Arpillera para capuchas)
+    function generateBurlapPBR() {
+      const w = 256, h = 256;
+      const hData = new Float32Array(w * h);
+      const rCanvas = document.createElement('canvas');
+      rCanvas.width = w; rCanvas.height = h;
+      const rCtx = rCanvas.getContext('2d');
+      const rImg = rCtx.createImageData(w, h);
+
+      const cCanvas = document.createElement('canvas');
+      cCanvas.width = w; cCanvas.height = h;
+      const cCtx = cCanvas.getContext('2d');
+      const cImg = cCtx.createImageData(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = y * w + x;
+          const threadX = Math.sin(x * 0.78);
+          const threadY = Math.sin(y * 0.78);
+          const weave = (Math.floor(x / 4) + Math.floor(y / 4)) % 2 === 0 ? threadX : threadY;
+          const noise = (Math.random() - 0.5) * 0.35;
+          const height = (weave * 0.5 + 0.5) * 0.7 + noise;
+          hData[idx] = height;
+
+          // Roughness: 0.95 - 1.0 (tejido seco y aspero)
+          const rVal = Math.floor((0.95 + Math.random() * 0.05) * 255);
+          rImg.data[idx * 4 + 0] = rVal;
+          rImg.data[idx * 4 + 1] = rVal;
+          rImg.data[idx * 4 + 2] = rVal;
+          rImg.data[idx * 4 + 3] = 255;
+
+          // Albedo: Arpillera sucia terrosa
+          const cTone = 60 + Math.floor(height * 28);
+          cImg.data[idx * 4 + 0] = cTone + 18; // R
+          cImg.data[idx * 4 + 1] = cTone + 6;  // G
+          cImg.data[idx * 4 + 2] = cTone - 12; // B
+          cImg.data[idx * 4 + 3] = 255;
+        }
+      }
+      rCtx.putImageData(rImg, 0, 0);
+      cCtx.putImageData(cImg, 0, 0);
+
+      const rTex = new THREE.CanvasTexture(rCanvas);
+      rTex.wrapS = THREE.RepeatWrapping; rTex.wrapT = THREE.RepeatWrapping;
+      const cTex = new THREE.CanvasTexture(cCanvas);
+      cTex.wrapS = THREE.RepeatWrapping; cTex.wrapT = THREE.RepeatWrapping;
+      const nTex = createNormalFromHeight(w, h, hData, 3.2);
+
+      return { map: cTex, normalMap: nTex, roughnessMap: rTex };
+    }
+
+    // B. Madera astillada con vetas secas y zonas húmedas (Caja del camión)
+    function generateWoodPBR() {
+      const w = 512, h = 256;
+      const hData = new Float32Array(w * h);
+      const rCanvas = document.createElement('canvas');
+      rCanvas.width = w; rCanvas.height = h;
+      const rCtx = rCanvas.getContext('2d');
+      const rImg = rCtx.createImageData(w, h);
+
+      const cCanvas = document.createElement('canvas');
+      cCanvas.width = w; cCanvas.height = h;
+      const cCtx = cCanvas.getContext('2d');
+      const cImg = cCtx.createImageData(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = y * w + x;
+          const plankGap = Math.abs(Math.sin((y / h) * Math.PI * 6.0));
+          const grain = Math.sin(y * 0.45 + Math.sin(x * 0.05) * 4.0) * 0.5 + 0.5;
+          const splinters = Math.random() < 0.08 ? (Math.random() - 0.5) * 0.6 : 0;
+          const height = grain * 0.6 + plankGap * 0.3 + splinters;
+          hData[idx] = height;
+
+          // Contraste de rugosidad: vetas secas (0.88 - 0.95), zonas húmedas/grasa (0.35 - 0.48)
+          const isDampZone = plankGap < 0.25 || (x % 90 < 22 && y % 50 < 18);
+          const rFloat = isDampZone ? (0.38 + Math.random() * 0.10) : (0.88 + Math.random() * 0.08);
+          const rVal = Math.floor(rFloat * 255);
+          rImg.data[idx * 4 + 0] = rVal;
+          rImg.data[idx * 4 + 1] = rVal;
+          rImg.data[idx * 4 + 2] = rVal;
+          rImg.data[idx * 4 + 3] = 255;
+
+          // Albedo: Madera oscura vieja de camión
+          const dampDarken = isDampZone ? 0.65 : 1.0;
+          const baseW = (48 + Math.floor(grain * 22)) * dampDarken;
+          cImg.data[idx * 4 + 0] = Math.floor(baseW * 1.15);
+          cImg.data[idx * 4 + 1] = Math.floor(baseW * 0.95);
+          cImg.data[idx * 4 + 2] = Math.floor(baseW * 0.75);
+          cImg.data[idx * 4 + 3] = 255;
+        }
+      }
+      rCtx.putImageData(rImg, 0, 0);
+      cCtx.putImageData(cImg, 0, 0);
+
+      const rTex = new THREE.CanvasTexture(rCanvas);
+      rTex.wrapS = THREE.RepeatWrapping; rTex.wrapT = THREE.RepeatWrapping;
+      const cTex = new THREE.CanvasTexture(cCanvas);
+      cTex.wrapS = THREE.RepeatWrapping; cTex.wrapT = THREE.RepeatWrapping;
+      const nTex = createNormalFromHeight(w, h, hData, 2.8);
+
+      return { map: cTex, normalMap: nTex, roughnessMap: rTex };
+    }
+
+    // C. Metal oxidado con pintura descascarada militar (Chasis, herrajes)
+    function generateMetalPBR() {
+      const w = 256, h = 256;
+      const hData = new Float32Array(w * h);
+      const rCanvas = document.createElement('canvas');
+      rCanvas.width = w; rCanvas.height = h;
+      const rCtx = rCanvas.getContext('2d');
+      const rImg = rCtx.createImageData(w, h);
+
+      const mCanvas = document.createElement('canvas');
+      mCanvas.width = w; mCanvas.height = h;
+      const mCtx = mCanvas.getContext('2d');
+      const mImg = mCtx.createImageData(w, h);
+
+      const cCanvas = document.createElement('canvas');
+      cCanvas.width = w; cCanvas.height = h;
+      const cCtx = cCanvas.getContext('2d');
+      const cImg = cCtx.createImageData(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = y * w + x;
+          const rustPatch = Math.sin(x * 0.08) * Math.cos(y * 0.08) + (Math.random() - 0.5) * 0.35;
+          const isRust = rustPatch > 0.15;
+          hData[idx] = isRust ? (Math.random() * 0.4) : 0.8;
+
+          // Roughness: Oxido aspero (0.80), pintura militar alisada (0.44)
+          const rFloat = isRust ? (0.80 + Math.random() * 0.10) : (0.44 + Math.random() * 0.08);
+          const rVal = Math.floor(rFloat * 255);
+          rImg.data[idx * 4 + 0] = rVal;
+          rImg.data[idx * 4 + 1] = rVal;
+          rImg.data[idx * 4 + 2] = rVal;
+          rImg.data[idx * 4 + 3] = 255;
+
+          // Metalness: Pintura/metal base 0.72, herrumbre oxidada 0.20
+          const mFloat = isRust ? 0.20 : 0.72;
+          const mVal = Math.floor(mFloat * 255);
+          mImg.data[idx * 4 + 0] = mVal;
+          mImg.data[idx * 4 + 1] = mVal;
+          mImg.data[idx * 4 + 2] = mVal;
+          mImg.data[idx * 4 + 3] = 255;
+
+          // Albedo: Pintura oliva militar vs óxido marrón rojizo
+          if (isRust) {
+            cImg.data[idx * 4 + 0] = 68 + Math.floor(Math.random() * 20);
+            cImg.data[idx * 4 + 1] = 38 + Math.floor(Math.random() * 14);
+            cImg.data[idx * 4 + 2] = 24;
+          } else {
+            cImg.data[idx * 4 + 0] = 42;
+            cImg.data[idx * 4 + 1] = 52;
+            cImg.data[idx * 4 + 2] = 36;
+          }
+          cImg.data[idx * 4 + 3] = 255;
+        }
+      }
+      rCtx.putImageData(rImg, 0, 0);
+      mCtx.putImageData(mImg, 0, 0);
+      cCtx.putImageData(cImg, 0, 0);
+
+      return {
+        map: new THREE.CanvasTexture(cCanvas),
+        normalMap: createNormalFromHeight(w, h, hData, 2.5),
+        roughnessMap: new THREE.CanvasTexture(rCanvas),
+        metalnessMap: new THREE.CanvasTexture(mCanvas)
+      };
+    }
+
+    // D. Barro y camino de tierra húmedo con hendiduras reflectantes (Charcos)
+    function generateMudPuddlePBR() {
+      const w = 512, h = 512;
+      const hData = new Float32Array(w * h);
+      const rCanvas = document.createElement('canvas');
+      rCanvas.width = w; rCanvas.height = h;
+      const rCtx = rCanvas.getContext('2d');
+      const rImg = rCtx.createImageData(w, h);
+
+      const cCanvas = document.createElement('canvas');
+      cCanvas.width = w; cCanvas.height = h;
+      const cCtx = cCanvas.getContext('2d');
+      const cImg = cCtx.createImageData(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = y * w + x;
+          const u = x / w;
+
+          // Huellas de neumaticos profundas a izquierda (0.28) y derecha (0.72)
+          const rutL = Math.exp(-Math.pow((u - 0.28) / 0.09, 2));
+          const rutR = Math.exp(-Math.pow((u - 0.72) / 0.09, 2));
+          const inRut = Math.max(rutL, rutR);
+
+          // Hendiduras con agua estancada
+          const waterPuddle = inRut > 0.45;
+          const bumps = (Math.random() - 0.5) * 0.15;
+          hData[idx] = waterPuddle ? -0.35 : (bumps * (1.0 - inRut));
+
+          // Rugosidad: Charcos en huellas (0.12 - 0.18) reflejando luna, barro exterior (0.90)
+          const rFloat = waterPuddle ? (0.13 + Math.random() * 0.05) : (0.90 + Math.random() * 0.08);
+          const rVal = Math.floor(rFloat * 255);
+          rImg.data[idx * 4 + 0] = rVal;
+          rImg.data[idx * 4 + 1] = rVal;
+          rImg.data[idx * 4 + 2] = rVal;
+          rImg.data[idx * 4 + 3] = 255;
+
+          // Albedo: Tierra pampeana húmeda, charcos más oscuros
+          const tone = waterPuddle ? 18 : (28 + Math.floor(Math.random() * 8));
+          cImg.data[idx * 4 + 0] = Math.floor(tone * 1.1);
+          cImg.data[idx * 4 + 1] = Math.floor(tone * 0.95);
+          cImg.data[idx * 4 + 2] = Math.floor(tone * 0.85);
+          cImg.data[idx * 4 + 3] = 255;
+        }
+      }
+      rCtx.putImageData(rImg, 0, 0);
+      cCtx.putImageData(cImg, 0, 0);
+
+      const rTex = new THREE.CanvasTexture(rCanvas);
+      rTex.wrapS = THREE.RepeatWrapping; rTex.wrapT = THREE.RepeatWrapping;
+      const cTex = new THREE.CanvasTexture(cCanvas);
+      cTex.wrapS = THREE.RepeatWrapping; cTex.wrapT = THREE.RepeatWrapping;
+      const nTex = createNormalFromHeight(w, h, hData, 3.4);
+
+      return { map: cTex, normalMap: nTex, roughnessMap: rTex };
+    }
+
+    // E. Toldo de lona con pliegues pesados y desgaste
+    function generateCanvasPBR() {
+      const w = 512, h = 256;
+      const hData = new Float32Array(w * h);
+      const rCanvas = document.createElement('canvas');
+      rCanvas.width = w; rCanvas.height = h;
+      const rCtx = rCanvas.getContext('2d');
+      const rImg = rCtx.createImageData(w, h);
+
+      const cCanvas = document.createElement('canvas');
+      cCanvas.width = w; cCanvas.height = h;
+      const cCtx = cCanvas.getContext('2d');
+      const cImg = cCtx.createImageData(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = y * w + x;
+          const sagFolds = Math.sin((x / w) * Math.PI * 4.0) * 0.45;
+          const tensionCreases = Math.sin((x + y * 0.5) * 0.25) * 0.25;
+          const height = sagFolds + tensionCreases + (Math.random() - 0.5) * 0.1;
+          hData[idx] = height;
+
+          // Rugosidad alta (0.90) de tejido militar
+          const rVal = Math.floor((0.90 + Math.random() * 0.04) * 255);
+          rImg.data[idx * 4 + 0] = rVal;
+          rImg.data[idx * 4 + 1] = rVal;
+          rImg.data[idx * 4 + 2] = rVal;
+          rImg.data[idx * 4 + 3] = 255;
+
+          // Albedo: Lona militar desgastada verdosa/marrón
+          const cTone = 52 + Math.floor(height * 14);
+          cImg.data[idx * 4 + 0] = cTone + 6;
+          cImg.data[idx * 4 + 1] = cTone + 4;
+          cImg.data[idx * 4 + 2] = cTone - 8;
+          cImg.data[idx * 4 + 3] = 255;
+        }
+      }
+      rCtx.putImageData(rImg, 0, 0);
+      cCtx.putImageData(cImg, 0, 0);
+
+      const rTex = new THREE.CanvasTexture(rCanvas);
+      rTex.wrapS = THREE.RepeatWrapping; rTex.wrapT = THREE.RepeatWrapping;
+      const cTex = new THREE.CanvasTexture(cCanvas);
+      cTex.wrapS = THREE.RepeatWrapping; cTex.wrapT = THREE.RepeatWrapping;
+      const nTex = createNormalFromHeight(w, h, hData, 2.6);
+
+      return { map: cTex, normalMap: nTex, roughnessMap: rTex };
+    }
+
+    const pbrBurlap = generateBurlapPBR();
+    const pbrWood = generateWoodPBR();
+    const pbrMetal = generateMetalPBR();
+    const pbrMud = generateMudPuddlePBR();
+    const pbrCanvas = generateCanvasPBR();
+
+    // ------------------------------------------------------------------------
+    // 4. Director Camera Presets
     // ------------------------------------------------------------------------
     const cameraPresets = {
-      master: {
-        pos: new THREE.Vector3(2.85, 1.48, 8.60),
-        target: new THREE.Vector3(0.02, 1.35, 2.90),
-        fov: 36
-      },
-      hero: {
-        pos: new THREE.Vector3(0.85, 1.62, 5.45),
-        target: new THREE.Vector3(0.02, 1.55, 2.85),
-        fov: 40
-      },
-      interior: {
-        pos: new THREE.Vector3(-0.68, 2.05, -0.40),
-        target: new THREE.Vector3(0.05, 1.45, 1.90),
-        fov: 48
-      },
-      props: {
-        pos: new THREE.Vector3(0.58, 1.65, 3.42),
-        target: new THREE.Vector3(0.42, 1.26, 2.60),
-        fov: 42
-      },
+      master: { pos: new THREE.Vector3(2.85, 1.48, 8.60), target: new THREE.Vector3(0.02, 1.35, 2.90), fov: 36 },
+      hero: { pos: new THREE.Vector3(0.85, 1.62, 5.45), target: new THREE.Vector3(0.02, 1.55, 2.85), fov: 40 },
+      interior: { pos: new THREE.Vector3(-0.68, 2.05, -0.40), target: new THREE.Vector3(0.05, 1.45, 1.90), fov: 48 },
+      props: { pos: new THREE.Vector3(0.58, 1.65, 3.42), target: new THREE.Vector3(0.42, 1.26, 2.60), fov: 42 },
       free: null
     };
 
@@ -486,27 +953,17 @@
 
       controls.enabled = false;
       gsap.to(camera.position, {
-        x: p.pos.x,
-        y: p.pos.y,
-        z: p.pos.z,
-        duration: 1.8,
-        ease: "power2.inOut"
+        x: p.pos.x, y: p.pos.y, z: p.pos.z,
+        duration: 1.8, ease: "power2.inOut"
       });
       gsap.to(controls.target, {
-        x: p.target.x,
-        y: p.target.y,
-        z: p.target.z,
-        duration: 1.8,
-        ease: "power2.inOut",
+        x: p.target.x, y: p.target.y, z: p.target.z,
+        duration: 1.8, ease: "power2.inOut",
         onUpdate: () => controls.update(),
-        onComplete: () => {
-          controls.enabled = true;
-        }
+        onComplete: () => { controls.enabled = true; }
       });
       gsap.to(camera, {
-        fov: p.fov,
-        duration: 1.8,
-        ease: "power2.inOut",
+        fov: p.fov, duration: 1.8, ease: "power2.inOut",
         onUpdate: () => camera.updateProjectionMatrix()
       });
     }
@@ -516,100 +973,41 @@
     });
 
     // ------------------------------------------------------------------------
-    // Lighting & Atmosphere
-    // ------------------------------------------------------------------------
-    // 1. Moonlight (Luz de luna fria y difusa)
-    const moonLight = new THREE.DirectionalLight(0x7e9cb8, 1.25);
-    moonLight.position.set(15, 35, -20);
-    moonLight.castShadow = true;
-    moonLight.shadow.mapSize.width = 2048;
-    moonLight.shadow.mapSize.height = 2048;
-    moonLight.shadow.camera.near = 1;
-    moonLight.shadow.camera.far = 120;
-    moonLight.shadow.camera.left = -25;
-    moonLight.shadow.camera.right = 25;
-    moonLight.shadow.camera.top = 25;
-    moonLight.shadow.camera.bottom = -25;
-    moonLight.shadow.bias = -0.0003;
-    scene.add(moonLight);
-
-    // Ambient night fill
-    const ambLight = new THREE.AmbientLight(0x131a24, 0.75);
-    scene.add(ambLight);
-
-    // 2. Headlights (Faros del camion cortando la bruma hacia adelante: -Z)
-    const headLeft = new THREE.SpotLight(0xffdfa8, 18, 55, Math.PI / 4, 0.6, 1.2);
-    headLeft.position.set(-0.53, 1.40, -3.20);
-    headLeft.target.position.set(-0.53, 0.40, -35);
-    scene.add(headLeft);
-    scene.add(headLeft.target);
-
-    const headRight = new THREE.SpotLight(0xffdfa8, 18, 55, Math.PI / 4, 0.6, 1.2);
-    headRight.position.set(0.53, 1.40, -3.20);
-    headRight.target.position.set(0.53, 0.40, -35);
-    scene.add(headRight);
-    scene.add(headRight.target);
-
-    // 3. Taillights (Luces rojas traseras iluminando ruedas y barro)
-    const tailL = new THREE.PointLight(0xff2211, 2.5, 6.0);
-    tailL.position.set(-0.78, 0.90, 2.92);
-    scene.add(tailL);
-
-    const tailR = new THREE.PointLight(0xff2211, 2.5, 6.0);
-    tailR.position.set(0.78, 0.90, 2.92);
-    scene.add(tailR);
-
-    // 4. Vintage Military Flashlight (Linterna en L en el piso de la compuerta)
-    const flashLight = new THREE.SpotLight(0xffb25a, 7.5, 6.5, Math.PI / 3.2, 0.55, 1.4);
-    flashLight.position.set(0.68, 1.34, 2.78);
-    flashLight.target.position.set(0.20, 1.24, 2.45);
-    scene.add(flashLight);
-    scene.add(flashLight.target);
-
-    // 5. Distant Military Outpost Warm Sodium Glow
-    const outpostGlow = new THREE.PointLight(0xff8c2b, 45, 90);
-    outpostGlow.position.set(-24, 7.5, -74);
-    scene.add(outpostGlow);
-
-    // ------------------------------------------------------------------------
-    // Procedural Low Ground Fog Particles
+    // 5. Niebla Rasante Procedural
     // ------------------------------------------------------------------------
     function createGroundMist() {
-      const mistCount = 220;
+      const mistCount = 260;
       const geom = new THREE.BufferGeometry();
       const positions = new Float32Array(mistCount * 3);
       const scales = new Float32Array(mistCount);
 
       for (let i = 0; i < mistCount; i++) {
-        // Alrededor del camino y la zanja
-        positions[i * 3 + 0] = (Math.random() - 0.5) * 55;
-        positions[i * 3 + 1] = 0.2 + Math.random() * 1.5;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 75;
-        scales[i] = 2.5 + Math.random() * 4.0;
+        positions[i * 3 + 0] = (Math.random() - 0.5) * 60;
+        positions[i * 3 + 1] = 0.15 + Math.random() * 1.4;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 80;
+        scales[i] = 2.8 + Math.random() * 4.5;
       }
       geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
       geom.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
 
-      // Generar textura suave radial de niebla
       const canvas = document.createElement('canvas');
-      canvas.width = 64;
-      canvas.height = 64;
+      canvas.width = 64; canvas.height = 64;
       const ctx = canvas.getContext('2d');
       const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-      grad.addColorStop(0, 'rgba(165, 185, 205, 0.28)');
-      grad.addColorStop(0.4, 'rgba(130, 150, 175, 0.14)');
-      grad.addColorStop(1, 'rgba(10, 15, 20, 0)');
+      grad.addColorStop(0, 'rgba(140, 165, 185, 0.24)');
+      grad.addColorStop(0.45, 'rgba(100, 125, 145, 0.11)');
+      grad.addColorStop(1, 'rgba(10, 13, 18, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 64, 64);
       const mistTex = new THREE.CanvasTexture(canvas);
 
       const mat = new THREE.PointsMaterial({
-        size: 4.5,
+        size: 5.0,
         map: mistTex,
         transparent: true,
         blending: THREE.NormalBlending,
         depthWrite: false,
-        opacity: 0.55
+        opacity: 0.50
       });
 
       const mistPoints = new THREE.Points(geom, mat);
@@ -619,7 +1017,7 @@
     const mistSystem = createGroundMist();
 
     // ------------------------------------------------------------------------
-    // Interactive Raycasting & Dossier Items
+    // 6. Interactive Raycasting & Dossier Items
     // ------------------------------------------------------------------------
     const interactiveItems = {
       'PROP_Zapatilla_Flecha_70s': {
@@ -656,7 +1054,6 @@
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    let hoveredObject = null;
 
     const dossierCard = document.getElementById('dossier-card');
     const dossierTag = document.getElementById('dossier-tag');
@@ -697,7 +1094,7 @@
     });
 
     // ------------------------------------------------------------------------
-    // Load Assembled 3D Scene GLB
+    // 7. Load Assembled 3D Scene GLB & Apply PBR Calibration
     // ------------------------------------------------------------------------
     const loaderBar = document.getElementById('loader-bar');
     const loaderStatus = document.getElementById('loader-status');
@@ -714,39 +1111,81 @@
             child.castShadow = true;
             child.receiveShadow = true;
 
-            // Ajuste fino de materiales PBR para WebGL
-            if (child.material) {
-              const m = child.material;
-              m.roughness = Math.min(1.0, m.roughness * 1.15);
-              m.envMapIntensity = 0.45;
-
-              // Identificar y enriquecer segun nombre de material
+            const m = child.material;
+            if (m) {
               const mName = m.name || '';
-              if (mName.includes('Terreno')) {
-                m.roughness = 0.88;
-                m.metalness = 0.05;
-              } else if (mName.includes('Arpillera')) {
+              const nodeName = child.name || '';
+
+              // A. Capuchas de arpillera (Burlap)
+              if (mName.includes('Arpillera') || mName.includes('Capucha') || nodeName.includes('Capucha')) {
                 m.roughness = 0.98;
-                m.color.setHex(0x524230);
-              } else if (mName.includes('Pintura_Oliva')) {
-                m.color.setHex(0x323a26);
-                m.metalness = 0.15;
-              } else if (mName.includes('Lona')) {
-                m.roughness = 0.95;
-                m.color.setHex(0x423d2b);
-              } else if (mName.includes('Flecha_Lona')) {
-                m.color.setHex(0x827a68);
-              } else if (mName.includes('Flecha_Goma')) {
-                m.color.setHex(0xa89e87);
-              } else if (mName.includes('Foco_Sodio') || mName.includes('Ventana_Calida')) {
-                m.emissive = new THREE.Color(0xff8b2c);
-                m.emissiveIntensity = 4.0;
+                m.metalness = 0.0;
+                m.map = pbrBurlap.map;
+                m.normalMap = pbrBurlap.normalMap;
+                m.roughnessMap = pbrBurlap.roughnessMap;
+                m.normalScale.set(1.8, 1.8);
+                if (m.map) m.map.repeat.set(6, 6);
+                if (m.normalMap) m.normalMap.repeat.set(6, 6);
+                m.needsUpdate = true;
+              }
+              // B. Caja y tablones de madera del camión y cajones
+              else if (mName.includes('Madera') || mName.includes('Tablon') || nodeName.includes('Tablon') || nodeName.includes('Cajon')) {
+                m.roughness = 0.86;
+                m.metalness = 0.04;
+                m.map = pbrWood.map;
+                m.normalMap = pbrWood.normalMap;
+                m.roughnessMap = pbrWood.roughnessMap;
+                m.normalScale.set(1.5, 1.5);
+                if (m.map) m.map.repeat.set(4, 2);
+                if (m.normalMap) m.normalMap.repeat.set(4, 2);
+                m.needsUpdate = true;
+              }
+              // C. Chasis, herrajes y parantes de hierro oxidado
+              else if (mName.includes('Herraje') || mName.includes('Hierro') || mName.includes('Pintura_Oliva') || nodeName.includes('Chasis') || nodeName.includes('Herraje')) {
+                m.roughness = 0.65;
+                m.metalness = 0.72;
+                m.map = pbrMetal.map;
+                m.normalMap = pbrMetal.normalMap;
+                m.roughnessMap = pbrMetal.roughnessMap;
+                m.metalnessMap = pbrMetal.metalnessMap;
+                m.normalScale.set(1.3, 1.3);
+                if (m.map) m.map.repeat.set(3, 3);
+                m.needsUpdate = true;
+              }
+              // D. Barro y camino de tierra húmedo con charcos reflectantes
+              else if (mName.includes('Terreno') || mName.includes('Barro') || nodeName.includes('Terreno') || nodeName.includes('Camino')) {
+                m.roughness = 0.72;
+                m.metalness = 0.06;
+                m.map = pbrMud.map;
+                m.normalMap = pbrMud.normalMap;
+                m.roughnessMap = pbrMud.roughnessMap;
+                m.normalScale.set(2.0, 2.0);
+                if (m.map) m.map.repeat.set(5, 10);
+                if (m.normalMap) m.normalMap.repeat.set(5, 10);
+                if (m.roughnessMap) m.roughnessMap.repeat.set(5, 10);
+                m.needsUpdate = true;
+              }
+              // E. Toldo de lona arrugado y desgastado
+              else if (mName.includes('Lona') || nodeName.includes('Toldo') || nodeName.includes('Lona')) {
+                m.roughness = 0.92;
+                m.metalness = 0.0;
+                m.map = pbrCanvas.map;
+                m.normalMap = pbrCanvas.normalMap;
+                m.roughnessMap = pbrCanvas.roughnessMap;
+                m.normalScale.set(1.6, 1.6);
+                if (m.map) m.map.repeat.set(4, 2);
+                m.needsUpdate = true;
+              }
+              // F. Emisivos nocturnos específicos
+              else if (mName.includes('Foco_Sodio') || mName.includes('Ventana_Calida')) {
+                m.emissive = new THREE.Color(0xff7a18);
+                m.emissiveIntensity = 4.5;
               } else if (mName.includes('Faro')) {
                 m.emissive = new THREE.Color(0xffdfa0);
-                m.emissiveIntensity = 8.0;
+                m.emissiveIntensity = 8.5;
               } else if (mName.includes('Luz_Trasera')) {
                 m.emissive = new THREE.Color(0xff1808);
-                m.emissiveIntensity = 5.0;
+                m.emissiveIntensity = 5.5;
               }
             }
           }
@@ -754,9 +1193,8 @@
 
         scene.add(root);
 
-        // Ocultar pantalla de carga
         loaderBar.style.width = '100%';
-        loaderStatus.innerText = 'ESCENA ENSAMBLADA';
+        loaderStatus.innerText = 'CALIDAD CINEMÁTICA CALIBRADA';
         setTimeout(() => loaderScreen.classList.add('hidden'), 500);
       },
       (xhr) => {
@@ -773,7 +1211,109 @@
     );
 
     // ------------------------------------------------------------------------
-    // Procedural Web Audio API Soundscape (Viento Pampeano y Motor Lejano)
+    // 8. Stack de Post-Procesado Cinematográfico (Color Grading, SSAO, Film Grain, Vignette)
+    // ------------------------------------------------------------------------
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    // Ambient Occlusion (SSAO): contacto de las figuras con el suelo y pliegues de ropa
+    let ssaoPass = null;
+    try {
+      ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+      ssaoPass.kernelRadius = 14;
+      ssaoPass.minDistance = 0.005;
+      ssaoPass.maxDistance = 0.14;
+      ssaoPass.output = SSAOPass.OUTPUT.Default;
+      composer.addPass(ssaoPass);
+    } catch (e) {
+      console.warn('SSAO en modo fallback:', e);
+    }
+
+    // UnrealBloom sutil para halos de luz tungsteno, faros y puesto distante
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.35,  // fuerza sutil
+      0.65,  // radio
+      0.82   // umbral para iluminacion de filamento
+    );
+    composer.addPass(bloomPass);
+
+    // Shader personalizado: Color Grading histórico 70s, Film Grain monocromático y Vignette
+    const HistoricalCinemaShader = {
+      uniforms: {
+        tDiffuse: { value: null },
+        uTime: { value: 0 },
+        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float uTime;
+        uniform vec2 uResolution;
+        varying vec2 vUv;
+
+        // Hash para ruido aleatorio de grano cinematografico
+        float hash(vec2 p) {
+          p = fract(p * vec2(123.34, 456.21));
+          p += dot(p, p + 45.32);
+          return fract(p.x * p.y);
+        }
+
+        void main() {
+          vec4 baseColor = texture2D(tDiffuse, vUv);
+          vec3 col = baseColor.rgb;
+
+          // 1. Color Grading Testimonial 70s (Garage Olimpo / La Noche de los Lapices)
+          // Desaturacion cinematografica
+          float lum = dot(col, vec3(0.299, 0.587, 0.114));
+          col = mix(vec3(lum), col, 0.84);
+
+          // Negros lavados/aplastados con tinte frio azul petroleo (#141b1f)
+          vec3 slateBlack = vec3(0.045, 0.062, 0.078);
+          col += slateBlack * (1.0 - smoothstep(0.0, 0.38, lum));
+
+          // Medios tonos teñidos hacia verdes grisaceos y oliva (#1f2824)
+          float midMask = smoothstep(0.06, 0.32, lum) * (1.0 - smoothstep(0.38, 0.82, lum));
+          vec3 midOliveTint = vec3(-0.012, 0.022, 0.008);
+          col += midOliveTint * midMask;
+
+          // Curva de contraste tipo celuloide forzado
+          col = pow(col, vec3(1.06));
+          col = smoothstep(0.0, 1.02, col);
+
+          // 2. Granulado Filmico (Film Grain 16mm/35mm)
+          vec2 grainCoord = vUv * uResolution * 0.8 + vec2(uTime * 43.1, uTime * 67.9);
+          float grain = hash(floor(grainCoord));
+          // Distribucion organica: mayor en sombras y medios tonos, sutil en brillos
+          float grainWeight = (1.0 - smoothstep(0.08, 0.92, lum)) * 0.055;
+          col += (grain - 0.5) * grainWeight;
+
+          // 3. Vignette (Sensacion de encierro bajo la lona)
+          vec2 normUv = (vUv - 0.5) * vec2(uResolution.x / uResolution.y, 1.0);
+          float dist = length(normUv);
+          float vignette = smoothstep(0.94, 0.38, dist);
+          col *= mix(vec3(0.04, 0.05, 0.07), vec3(1.0), vignette);
+
+          gl_FragColor = vec4(col, baseColor.a);
+        }
+      `
+    };
+
+    const cinematicPass = new ShaderPass(HistoricalCinemaShader);
+    composer.addPass(cinematicPass);
+
+    const outputPass = new OutputPass();
+    composer.addPass(outputPass);
+
+    // ------------------------------------------------------------------------
+    // 9. Procedural Web Audio API Soundscape (Viento Pampeano y Motor Lejano)
     // ------------------------------------------------------------------------
     let audioCtx = null;
     let audioPlaying = false;
@@ -845,7 +1385,6 @@
       rumbleNode.gain.linearRampToValueAtTime(targetRumble, audioCtx.currentTime + 1.2);
     });
 
-    // Fullscreen toggle
     document.getElementById('btn-fs').addEventListener('click', () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
@@ -855,7 +1394,7 @@
     });
 
     // ------------------------------------------------------------------------
-    // Animation Loop
+    // 10. Animation Loop
     // ------------------------------------------------------------------------
     const clock = new THREE.Clock();
 
@@ -875,23 +1414,32 @@
         mistSystem.geometry.attributes.position.needsUpdate = true;
       }
 
-      // Parpadeo sutil diegetico del foco de la linterna y luces
+      // Parpadeo sutil diegético del foco de la linterna militar
       if (flashLight) {
-        flashLight.intensity = 7.5 + Math.sin(elapsed * 9.0) * 0.2 + (Math.random() - 0.5) * 0.15;
+        flashLight.intensity = 10.5 + Math.sin(elapsed * 8.5) * 0.25 + (Math.random() - 0.5) * 0.2;
       }
 
       controls.update();
-      renderer.render(scene, camera);
+
+      // Actualizar uniformes del shader cinemático
+      cinematicPass.uniforms.uTime.value = elapsed;
+
+      // Render a través del composer de post-procesamiento
+      composer.render();
     }
     animate();
 
-    // Resize Handler
+    // ------------------------------------------------------------------------
+    // 11. Resize Handler
+    // ------------------------------------------------------------------------
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+      if (ssaoPass) ssaoPass.setSize(window.innerWidth, window.innerHeight);
+      cinematicPass.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
 </html>
-

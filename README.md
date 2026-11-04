@@ -1,80 +1,77 @@
-# La Escena 1: El Traslado (1976) — Experiencia 3D Cinemática Web
+# La Escena 1: El Traslado (1976) — Experiencia 3D Cinemática Web & Godot 4
 
-Experiencia interactiva 3D cinemática y juego de sigilo narrativo ambientado en un camino rural clandestino durante los años 70 en Argentina. Construido con **Three.js**, **GLTF/GLB PBR**, **Web Audio API** y optimizado para despliegue directo en **Vercel**.
+Experiencia interactiva 3D cinemática y juego de sigilo narrativo ambientado en un camino rural clandestino durante los años 70 en Argentina. Construido con **Three.js (r160)**, **Pipeline PBR Cinemático**, **Web Audio API** y optimizado para despliegue directo en **Vercel** y desarrollo en **Godot 4**.
+
+---
+
+## 🎨 Pipeline Gráfico & Calibración PBR (Technical Art)
+
+Intervención sobre calidad visual, shaders e iluminación con estética cinematográfica testimonial (estilo *Garage Olimpo* y *La Noche de los Lápices*):
+
+1. **Iluminación y Entorno (World Environment):**
+   * **HDRI Rural Nocturno:** Integración de mapa de entorno (`moonlit_night.hdr`) para reflejos físicos especulares en metales y charcos.
+   * **Luz de Luna (DirectionalLight):** Tono frío desaturado (`#8faac9`), intensidad calibrada (0.38) y sombras suaves PCF.
+   * **Niebla Volumétrica Baja (FogExp2):** Tono oscuro (`#0a0d12`) que funde la vegetación y el camino en la penumbra pampeana.
+   * **Linterna Militar en "L":** Tinte tungsteno sucio (`#c99a4e`), atenuación cuadrática real (`decay = 2.0`), cono difuso y parpadeo diegético.
+
+2. **Calibración de Materiales PBR:**
+   * **Capuchas de arpillera (Burlap):** Rugosidad 0.98, metalicidad 0.0 y mapa de normales marcado resaltando la trama áspera de saco.
+   * **Caja y tablones de madera:** Textura con marcado contraste de rugosidad entre vetas secas (0.88) y zonas húmedas/grasa (0.38) con relieve de astillado.
+   * **Chasis y herrajes oxidados:** Metalicidad 0.72 con pintura verde oliva militar descascarada y micro-relieve de herrumbre.
+   * **Barro con charcos reflectantes:** Rugosidad de 0.12 a 0.18 en las hendiduras/huellas de neumáticos para generar reflejos especulares de la luna y las luces traseras.
+   * **Toldo de lona militar:** Rugosidad 0.92 con mapa de normales simulando arrugas pesadas y pliegues tensados entre arcos.
+
+3. **Post-Procesado Cinematográfico (`EffectComposer`):**
+   * **SSAO (Screen Space Ambient Occlusion):** Contacto sutil de figuras y objetos con el suelo entablonado y profundidad en pliegues.
+   * **UnrealBloom:** Resplandor sutil en filamentos incandescentes y luces distantes.
+   * **Color Grading de Época:** Negros lavados/aplastados teñidos hacia azul petróleo (`#141b1f`) y medios tonos verdosos oliva (`#1f2824`).
+   * **Film Grain Monocromático:** Granulado analógico procedural de 16mm/35mm que rompe la estética digital limpia.
+   * **Vignette:** Oscurecimiento perimetral óptico para acentuar el encierro bajo el toldo.
+
+4. **Compatibilidad Godot 4.x:**
+   * Scripts y shaders incluidos en `godot/` (`acto1_setup_visual.gd` y `film_grain_vignette.gdshader`) para replicar 1:1 el pipeline en el motor de juego Godot.
 
 ---
 
 ## 🚀 Despliegue en Vercel
 
-El proyecto está configurado con `vercel.json` optimizado para la entrega de modelos binarios 3D `.glb` con compresión y caché de borde.
+El proyecto está configurado con `vercel.json` optimizado para la entrega de modelos binarios 3D `.glb` y mapas `.hdr` con compresión y caché de borde.
 
-### Opción A: Despliegue con 1 comando vía Vercel CLI
-En la terminal de tu máquina (PowerShell o CMD), dentro de esta carpeta (`d:\jeugosnacho`):
-```bash
-npx vercel
-```
-* Sigue las instrucciones interactivas (Enter en todas las opciones por defecto).
-* ¡Tu escena 3D estará en línea con HTTPS y CDN global en menos de 1 minuto!
+### Opción A: Conectar repositorio en Vercel Dashboard (Recomendado)
+1. Ingresa a [vercel.com](https://vercel.com) -> **Add New Project**.
+2. Conecta tu cuenta e importa el repositorio `estamos-sanando/nnn`.
+3. Vercel detectará el sitio estático automáticamente.
+4. Haz clic en **Deploy**.
 
-Para desplegar a producción definitiva:
+### Opción B: Despliegue con CLI
 ```bash
 npx vercel --prod
 ```
-
-### Opción B: Conectar repositorio en Vercel Dashboard
-1. Sube esta carpeta a un repositorio de GitHub / GitLab.
-2. Ingresa a [vercel.com](https://vercel.com) -> **Add New Project** -> Selecciona el repositorio.
-3. Vercel detectará automáticamente el sitio estático (`index.html` + `public/`).
-4. Haz clic en **Deploy**.
 
 ---
 
 ## 💻 Ejecución y Prueba Local
 
-Para abrirlo en tu navegador localmente antes de desplegar:
-
-### Con Node.js / NPX:
 ```bash
+# Con Node / npx:
 npx serve .
-```
-o con Vite:
-```bash
-npx vite
-```
-Abre en tu navegador `http://localhost:3000` o `http://localhost:5173`.
 
-### Con Python:
-```bash
+# O con Python:
 python -m http.server 8000
 ```
-Abre en tu navegador `http://localhost:8000`.
+Abre en tu navegador `http://localhost:8000` o `http://localhost:3000`.
 
 ---
 
-## 🎮 Controles e Interactividad en la Web
+## 🎮 Controles e Interactividad
 
 * **Selector de Cámaras de Dirección Cinemática:**
-  * `[01] MASTER CINEMÁTICA`: Plano general de 3/4 trasero con el camión, la compuerta abatida, niebla rasante pampeana y resplandor de la base militar lejana.
-  * `[02] CAUTIVO HERO`: Plano medio dramático enfocado en el cautivo central sentado en la compuerta, con la capucha de arpillera, soga al cuello, manos atadas a la espalda y la zapatilla *Flecha*.
-  * `[03] INTERIOR CAJA`: Perspectiva claustrofóbica desde las profundidades del toldo rasgado mirando hacia los cautivos de fondo y la salida trasera.
-  * `[04] INSPECCIÓN FLECHA`: Plano de inspección detallado sobre los objetos interactivos del piso de madera (zapatilla Flecha gastada, libreta de campo clandestina y linterna en L).
-  * `[05] MODO LIBRE 360°`: Control orbital manual completo (rotar con clic izquierdo / arrastre táctil, paneo con clic derecho, zoom con rueda).
+  * `[01] VISTA GENERAL`: Plano general de 3/4 trasero con el camión, niebla rasante y el puesto militar lejano.
+  * `[02] CAUTIVO HERO`: Plano medio dramático sobre el cautivo central sentado en la compuerta.
+  * `[03] INTERIOR DE CAJA`: Perspectiva claustrofóbica mirando hacia los cautivos de fondo.
+  * `[04] INSPECCIÓN PROPS`: Enfoque sobre la zapatilla Flecha, la libreta clandestina y la linterna en L.
+  * `[05] MODO LIBRE`: Control orbital 360° con ratón o gestos táctiles.
 * **Inspección de Evidencia 3D (Raycasting):**
-  * Haz clic sobre la **Zapatilla Flecha**, la **Libreta de Apuntes**, la **Linterna Militar**, el **Cautivo Central** o la **Radio de Campaña** para abrir el informe desclasificado con detalles históricos.
+  * Haz clic en los objetos o cautivos para abrir las fichas desclasificadas históricas.
 * **Paisaje Sonoro Diegético (Web Audio API):**
-  * Botón `🔊 AUDIO`: Activa la síntesis procedural en tiempo real del viento nocturno pampeano y el murmullo grave del motor diesel en ralentí.
-* **Pantalla Completa:**
-  * Botón `⛶ PANTALLA COMPLETA` para una experiencia inmersiva cinematográfica.
-
----
-
-## 📁 Estructura del Proyecto
-
-* `index.html`: Aplicación web interactiva completa (Three.js r160, OrbitControls, GSAP, Web Audio API y HUD temático).
-* `escena1_el_traslado.glb`: Modelo 3D ensamblado completo en formato binario GLTF (12.0 MB).
-* `public/escena1_el_traslado.glb`: Copia para servido estático en Vite/Vercel.
-* `vercel.json`: Configuración de headers MIME `model/gltf-binary` y caché inmutable para Vercel.
-* `escena1_el_traslado.blend`: Escena fuente editable en Blender 5.x LTS.
-* `renders/`: Renders cinemáticos de alta resolución de las 4 cámaras principales.
-* `build/`: Scripts procedurales Python generadores de la escena completa.
-
+  * Botón `🔊 AUDIO`: Síntesis procedural en tiempo real del viento nocturno y el motor diesel en ralentí.
