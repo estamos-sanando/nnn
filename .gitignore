@@ -1,7 +1,10 @@
 node_modules/
 .DS_Store
 *.blend1
-build/
+build/*.blend
+build/*.blend1
+build/*.png
+build/*.txt
+build/__pycache__/
 bench_*.png
 test_*.png
-

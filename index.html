@@ -548,6 +548,155 @@
     scene.environment = buildNightEnvironment();
 
     // ------------------------------------------------------------------------
+    // 2.1 Cúpula Celeste Nocturna (Skydome / Cloud Card - Referencias 2 y 4)
+    // ------------------------------------------------------------------------
+    function createSkydome() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, 512);
+      skyGrad.addColorStop(0.00, '#0d1828'); // Zenith azul noche
+      skyGrad.addColorStop(0.35, '#0a1320');
+      skyGrad.addColorStop(0.70, '#060b12');
+      skyGrad.addColorStop(0.92, '#04070c'); // Horizonte
+      skyGrad.addColorStop(1.00, '#020406');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, 1024, 512);
+
+      // Disco lunar y halo difuso filtrado por nubes
+      const mx = 660, my = 135;
+      
+      const halo = ctx.createRadialGradient(mx, my, 8, mx, my, 180);
+      halo.addColorStop(0.0, 'rgba(215, 235, 255, 0.45)');
+      halo.addColorStop(0.25, 'rgba(145, 180, 220, 0.20)');
+      halo.addColorStop(0.60, 'rgba(60, 95, 140, 0.07)');
+      halo.addColorStop(1.0, 'rgba(10, 18, 30, 0.0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(mx, my, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      const moonDisc = ctx.createRadialGradient(mx, my, 0, mx, my, 20);
+      moonDisc.addColorStop(0.0, 'rgba(255, 255, 255, 0.95)');
+      moonDisc.addColorStop(0.7, 'rgba(230, 240, 255, 0.85)');
+      moonDisc.addColorStop(1.0, 'rgba(180, 210, 245, 0.0)');
+      ctx.fillStyle = moonDisc;
+      ctx.beginPath();
+      ctx.arc(mx, my, 20, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bandas de nubes nocturnas pampeanas
+      ctx.fillStyle = 'rgba(5, 9, 15, 0.58)';
+      for (let b = 0; b < 22; b++) {
+        const cy = 50 + b * 19;
+        ctx.beginPath();
+        ctx.ellipse(mx + (b % 4 - 1.5) * 60, cy, 320 + b * 20, 18 + (b % 4) * 6, (b * 0.04) - 0.15, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      const geo = new THREE.SphereGeometry(190, 36, 24);
+      const mat = new THREE.MeshBasicMaterial({
+        map: tex,
+        side: THREE.BackSide,
+        fog: false,
+        depthWrite: false
+      });
+      const dome = new THREE.Mesh(geo, mat);
+      dome.position.set(0, -8, 0);
+      scene.add(dome);
+      return dome;
+    }
+    const skydome = createSkydome();
+
+    // ------------------------------------------------------------------------
+    // 2.2 Silueta de Bosque Distante (Distant Forest Wall - Referencia 4)
+    // ------------------------------------------------------------------------
+    function createForestWall() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      
+      ctx.fillStyle = '#04070a';
+      ctx.beginPath();
+      ctx.moveTo(0, 128);
+      for (let x = 0; x <= 512; x += 6) {
+        const h = 42 + Math.sin(x * 0.035) * 16 + Math.cos(x * 0.08) * 12 + Math.sin(x * 0.19) * 8;
+        ctx.lineTo(x, 128 - h);
+      }
+      ctx.lineTo(512, 128);
+      ctx.closePath();
+      ctx.fill();
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.repeat.set(4, 1);
+
+      const wallGeo = new THREE.CylinderGeometry(85, 85, 30, 32, 1, true, -Math.PI * 0.75, Math.PI * 1.5);
+      const wallMat = new THREE.MeshBasicMaterial({
+        map: tex,
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+        fog: true
+      });
+      const wall = new THREE.Mesh(wallGeo, wallMat);
+      wall.position.set(0, 12, -28);
+      scene.add(wall);
+    }
+    createForestWall();
+
+    // ------------------------------------------------------------------------
+    // 2.3 Charcos Especulares en Huellas del Camino (Referencias 2 y 4)
+    // ------------------------------------------------------------------------
+    function createRoadPuddles() {
+      const pGroup = new THREE.Group();
+      const pMat = new THREE.MeshStandardMaterial({
+        color: 0x070b10,
+        roughness: 0.05,
+        metalness: 0.12,
+        transparent: true,
+        opacity: 0.82
+      });
+
+      const tracks = [-0.90, 0.90];
+      const puddleZ = [-18, -12, -6, 0, 4.5, 9.5];
+      
+      tracks.forEach((xPos) => {
+        puddleZ.forEach((zPos, idx) => {
+          const len = 3.0 + (idx % 3) * 1.2;
+          const wid = 0.36 + (idx % 2) * 0.10;
+          const pGeo = new THREE.PlaneGeometry(wid, len, 8, 16);
+          pGeo.rotateX(-Math.PI / 2);
+          
+          const pos = pGeo.attributes.position.array;
+          for (let i = 0; i < pos.length; i += 3) {
+            const u = pos[i] / (wid / 2);
+            const v = pos[i + 2] / (len / 2);
+            if (Math.hypot(u, v) > 1.0) {
+              pos[i] *= 0.85;
+              pos[i + 2] *= 0.85;
+            }
+          }
+          pGeo.computeVertexNormals();
+
+          const mesh = new THREE.Mesh(pGeo, pMat);
+          mesh.position.set(xPos + (idx % 2 - 0.5) * 0.06, 0.045, zPos);
+          mesh.receiveShadow = true;
+          pGroup.add(mesh);
+        });
+      });
+
+      scene.add(pGroup);
+    }
+    createRoadPuddles();
+
+
+    // ------------------------------------------------------------------------
     // 3. Iluminación Calibrada de Noche (Luz de Luna + Linterna + Relleno)
     // ------------------------------------------------------------------------
     // Luz de Luna: baña el techo de lona, compuerta y el camino
@@ -689,10 +838,10 @@
     // 5. Director Camera Presets
     // ------------------------------------------------------------------------
     const cameraPresets = {
-      master: { pos: new THREE.Vector3(2.85, 1.48, 8.60), target: new THREE.Vector3(0.02, 1.35, 2.90), fov: 36 },
-      hero: { pos: new THREE.Vector3(0.85, 1.62, 5.45), target: new THREE.Vector3(0.02, 1.55, 2.85), fov: 40 },
-      interior: { pos: new THREE.Vector3(-0.68, 2.05, -0.40), target: new THREE.Vector3(0.05, 1.45, 1.90), fov: 48 },
-      props: { pos: new THREE.Vector3(0.58, 1.65, 3.42), target: new THREE.Vector3(0.42, 1.26, 2.60), fov: 42 },
+      master: { pos: new THREE.Vector3(2.65, 1.55, 8.20), target: new THREE.Vector3(0.02, 1.35, 2.70), fov: 36 },
+      hero: { pos: new THREE.Vector3(0.48, 1.52, 4.50), target: new THREE.Vector3(0.02, 1.42, 2.75), fov: 38 },
+      interior: { pos: new THREE.Vector3(0.12, 1.68, 0.35), target: new THREE.Vector3(0.02, 1.38, 2.75), fov: 50 },
+      props: { pos: new THREE.Vector3(0.62, 1.62, 3.35), target: new THREE.Vector3(0.42, 1.26, 2.65), fov: 42 },
       free: null
     };
 
@@ -869,16 +1018,31 @@
         if (light.parent) light.parent.remove(light);
       });
 
-      // 2. Asignar los mapas PBR fotográficos a las mallas principales
+      // 2. Asignar los mapas PBR fotográficos y suavizar geometría
       root.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
 
+          // Suavizado de normales de vértices para eliminar apariencia facetada/cuadrada
+          if (child.geometry) {
+            child.geometry.computeVertexNormals();
+          }
+
           const m = child.material;
           if (m) {
+            m.flatShading = false;
             const mName = m.name || '';
             const nodeName = child.name || '';
+
+            // Follaje y arbustos orgánicos
+            if (nodeName.includes('ARBUSTOS') || nodeName.includes('BOSQUE_Follaje') || mName.includes('Follaje')) {
+              m.color.setHex(0x182416);
+              m.roughness = 0.88;
+              m.metalness = 0.0;
+              m.needsUpdate = true;
+              return;
+            }
 
             // A. Capuchas de arpillera (Burlap - fabric_pattern_07 / Fabric048)
             if (mName.includes('Arpillera') || mName.includes('Capucha') || nodeName.includes('Capucha')) {
@@ -932,7 +1096,8 @@
               m.roughness = 0.92;
               m.metalness = 0.0;
               m.normalScale.set(1.4, 1.4);
-              m.color.setHex(0xb2bca4); // Tinte verde oliva militar auténtico
+              m.color.setHex(0xb2bca4);
+              m.side = THREE.DoubleSide;
               m.needsUpdate = true;
             }
             // Elementos complementarios
@@ -1127,6 +1292,10 @@
       const elapsed = clock.getElapsedTime();
 
       // Niebla rasante
+      if (skydome) {
+        skydome.rotation.y += delta * 0.0012;
+      }
+
       if (mistSystem) {
         const pos = mistSystem.geometry.attributes.position.array;
         for (let i = 0; i < pos.length; i += 3) {
