@@ -1,0 +1,19 @@
+{
+  "name": "la-escena-1-el-traslado",
+  "version": "1.0.0",
+  "description": "Experiencia 3D Cinematica Interactiva: La Escena 1: El Traslado (Argentina, 1970s)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "vite": "^5.1.0"
+  }
+}
+

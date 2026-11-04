@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>La Escena 1: El Traslado (1976) | Experiencia 3D Cinemática</title>
+  <meta name="description" content="Experiencia interactiva 3D cinemática y juego de sigilo narrativo ambientado en Argentina durante los años 70.">
+  
+  <!-- Tipografias tematicas tipo maquina de escribir y militar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Teko:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #06090d;
+      --accent-amber: #d48b3b;
+      --accent-red: #c0392b;
+      --accent-green: #4e5d42;
+      --paper-cream: #d8ceb8;
+      --text-muted: #7d8579;
+      --border-dark: rgba(212, 139, 59, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--paper-cream);
+    }
+
+    #webgl-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Vignette & Gritty Film Grain Overlay */
+    .cinematic-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      background: radial-gradient(circle at center, transparent 40%, rgba(3, 5, 8, 0.82) 95%);
+      box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.9);
+    }
+
+    .cinematic-overlay::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 2px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    /* HUD Header */
+    .hud-header {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .classification-tag {
+      display: inline-block;
+      font-family: 'Teko', sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: 3px;
+      color: #0b0f14;
+      background-color: var(--accent-amber);
+      padding: 2px 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 6px;
+      border-radius: 2px;
+    }
+
+    .title-main {
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #eae5d9;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    }
+
+    .title-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-top: 3px;
+    }
+
+    /* Director Camera Switcher */
+    .camera-switcher {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+      background: rgba(8, 12, 16, 0.88);
+      padding: 8px 12px;
+      border: 1px solid var(--border-dark);
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+      max-width: 95vw;
+      overflow-x: auto;
+    }
+
+    .cam-btn {
+      background: rgba(20, 26, 33, 0.9);
+      border: 1px solid rgba(212, 139, 59, 0.22);
+      color: #b5ad9b;
+      padding: 8px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      cursor: pointer;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.22s ease;
+      white-space: nowrap;
+    }
+
+    .cam-btn:hover {
+      background: rgba(212, 139, 59, 0.18);
+      border-color: var(--accent-amber);
+      color: #fff;
+    }
+
+    .cam-btn.active {
+      background: var(--accent-amber);
+      color: #0b0f14;
+      font-weight: 700;
+      border-color: #f7b368;
+      box-shadow: 0 0 14px rgba(212, 139, 59, 0.45);
+    }
+
+    .cam-btn span.num {
+      display: inline-block;
+      font-size: 0.72rem;
+      opacity: 0.75;
+    }
+
+    /* Quick Control Action Tools (Right Top) */
+    .hud-tools {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+    }
+
+    .tool-btn {
+      background: rgba(8, 12, 16, 0.85);
+      border: 1px solid var(--border-dark);
+      color: var(--paper-cream);
+      padding: 7px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.80rem;
+      border-radius: 3px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s;
+    }
+
+    .tool-btn:hover {
+      border-color: var(--accent-amber);
+      color: #fff;
+    }
+
+    .tool-btn.active {
+      background: rgba(212, 139, 59, 0.25);
+      border-color: var(--accent-amber);
+      color: #f7b368;
+    }
+
+    /* Interactive Dossier Modal / Drawer */
+    .dossier-card {
+      position: absolute;
+      top: 90px;
+      right: 24px;
+      width: 320px;
+      background: rgba(11, 15, 20, 0.94);
+      border: 1px solid var(--border-dark);
+      border-left: 3px solid var(--accent-amber);
+      padding: 18px;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      border-radius: 3px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.9);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+      transform: translateX(115%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .dossier-card.visible {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .dossier-tag {
+      font-size: 0.72rem;
+      color: var(--accent-amber);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .dossier-title {
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+
+    .dossier-body {
+      font-size: 0.82rem;
+      color: #b8b3a5;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .dossier-close {
+      display: inline-block;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .dossier-close:hover {
+      color: var(--accent-amber);
+    }
+
+    /* Loading Screen */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #05080c;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+      padding: 24px;
+      text-align: center;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-stamp {
+      font-family: 'Teko', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 4px;
+      color: #0b0f14;
+      background-color: var(--accent-amber);
+      padding: 4px 18px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .loader-title {
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.6rem;
+      color: #eae5d9;
+      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+    }
+
+    .loader-quote {
+      font-size: 0.85rem;
+      color: #727c6e;
+      max-width: 480px;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .loader-bar-wrap {
+      width: 260px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .loader-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent-amber);
+      transition: width 0.2s ease;
+    }
+
+    .loader-status {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      .hud-header { top: 12px; left: 14px; }
+      .title-main { font-size: 1.15rem; }
+      .camera-switcher { bottom: 14px; padding: 6px; }
+      .cam-btn { padding: 6px 10px; font-size: 0.74rem; }
+      .dossier-card { width: calc(100vw - 28px); right: 14px; top: auto; bottom: 80px; }
+    }
+  </style>
+
+  <!-- Import maps polyfill for ES modules -->
+  <script async src="https://ga.jspm.io/npm:es-module-shims@1.10.1/dist/es-module-shims.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+      "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- WebGL Canvas Container -->
+  <div id="webgl-container"></div>
+  <div class="cinematic-overlay"></div>
+
+  <!-- HUD Header -->
+  <div class="hud-header">
+    <div class="classification-tag">ACTO I: EL TRASLADO // 1976</div>
+    <div class="title-main">LA ESCENA 1: EL TRASLADO</div>
+    <div class="title-sub">CAMINO RURAL CLANDESTINO — PROVINCIA DE BUENOS AIRES</div>
+  </div>
+
+  <!-- Tools (Audio, Free Cam, Fullscreen) -->
+  <div class="hud-tools">
+    <button id="btn-audio" class="tool-btn">🔊 AUDIO: OFF</button>
+    <button id="btn-fs" class="tool-btn">⛶ PANTALLA COMPLETA</button>
+  </div>
+
+  <!-- Director Camera Navigation Buttons -->
+  <div class="camera-switcher">
+    <button class="cam-btn active" data-cam="master"><span class="num">01</span> MASTER CINEMÁTICA</button>
+    <button class="cam-btn" data-cam="hero"><span class="num">02</span> CAUTIVO HERO</button>
+    <button class="cam-btn" data-cam="interior"><span class="num">03</span> INTERIOR CAJA</button>
+    <button class="cam-btn" data-cam="props"><span class="num">04</span> INSPECCIÓN FLECHA</button>
+    <button class="cam-btn" data-cam="free"><span class="num">05</span> MODO LIBRE 360°</button>
+  </div>
+
+  <!-- Historical Interactive Dossier Drawer -->
+  <div id="dossier-card" class="dossier-card">
+    <div id="dossier-tag" class="dossier-tag">ITEM HISTÓRICO // EVIDENCIA #01</div>
+    <div id="dossier-title" class="dossier-title">ZAPATILLA DE LONA 'FLECHA'</div>
+    <div id="dossier-body" class="dossier-body">
+      Zapatilla de lona cruda con vira blanca y suela de caucho vulcanizado, calzado civil masivo en la juventud argentina de los años 70. Abandonada en las tablas de la caja de carga durante el traslado forzado.
+    </div>
+    <div class="dossier-close" id="dossier-close">CERRAR INFORME [ESC]</div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div class="loader-stamp">DESCLASIFICADO // ARCHIVO 1976</div>
+    <div class="loader-title">LA ESCENA 1: EL TRASLADO</div>
+    <div class="loader-quote">"El frío pampeano, la lona desgarrada y el sonido del motor en la oscuridad de los caminos de tierra..."</div>
+    <div class="loader-bar-wrap">
+      <div id="loader-bar" class="loader-bar"></div>
+    </div>
+    <div id="loader-status" class="loader-status">CARGANDO ENTORNO HISTÓRICO 3D...</div>
+  </div>
+
+  <!-- Application Logic -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import gsap from 'gsap';
+
+    // ------------------------------------------------------------------------
+    // Setup Renderer, Scene & Camera
+    // ------------------------------------------------------------------------
+    const container = document.getElementById('webgl-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x060a10);
+    scene.fog = new THREE.FogExp2(0x0b1118, 0.026);
+
+    const camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 450);
+    // Posicion inicial: Master Cinematic (X=2.85, Y=1.48, Z=8.60)
+    camera.position.set(2.85, 1.48, 8.60);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI * 0.49;
+    controls.minDistance = 0.4;
+    controls.maxDistance = 65;
+    controls.target.set(0.02, 1.35, 2.90);
+    controls.update();
+
+    // ------------------------------------------------------------------------
+    // Cinematic Director Cameras (Converted to Three.js Y-up coordinates)
+    // ------------------------------------------------------------------------
+    const cameraPresets = {
+      master: {
+        pos: new THREE.Vector3(2.85, 1.48, 8.60),
+        target: new THREE.Vector3(0.02, 1.35, 2.90),
+        fov: 36
+      },
+      hero: {
+        pos: new THREE.Vector3(0.85, 1.62, 5.45),
+        target: new THREE.Vector3(0.02, 1.55, 2.85),
+        fov: 40
+      },
+      interior: {
+        pos: new THREE.Vector3(-0.68, 2.05, -0.40),
+        target: new THREE.Vector3(0.05, 1.45, 1.90),
+        fov: 48
+      },
+      props: {
+        pos: new THREE.Vector3(0.58, 1.65, 3.42),
+        target: new THREE.Vector3(0.42, 1.26, 2.60),
+        fov: 42
+      },
+      free: null
+    };
+
+    let activePreset = 'master';
+
+    function switchCamera(name) {
+      activePreset = name;
+      document.querySelectorAll('.cam-btn').forEach(b => b.classList.toggle('active', b.dataset.cam === name));
+      
+      if (name === 'free') {
+        controls.enabled = true;
+        return;
+      }
+      
+      const p = cameraPresets[name];
+      if (!p) return;
+
+      controls.enabled = false;
+      gsap.to(camera.position, {
+        x: p.pos.x,
+        y: p.pos.y,
+        z: p.pos.z,
+        duration: 1.8,
+        ease: "power2.inOut"
+      });
+      gsap.to(controls.target, {
+        x: p.target.x,
+        y: p.target.y,
+        z: p.target.z,
+        duration: 1.8,
+        ease: "power2.inOut",
+        onUpdate: () => controls.update(),
+        onComplete: () => {
+          controls.enabled = true;
+        }
+      });
+      gsap.to(camera, {
+        fov: p.fov,
+        duration: 1.8,
+        ease: "power2.inOut",
+        onUpdate: () => camera.updateProjectionMatrix()
+      });
+    }
+
+    document.querySelectorAll('.cam-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchCamera(btn.dataset.cam));
+    });
+
+    // ------------------------------------------------------------------------
+    // Lighting & Atmosphere
+    // ------------------------------------------------------------------------
+    // 1. Moonlight (Luz de luna fria y difusa)
+    const moonLight = new THREE.DirectionalLight(0x7e9cb8, 1.25);
+    moonLight.position.set(15, 35, -20);
+    moonLight.castShadow = true;
+    moonLight.shadow.mapSize.width = 2048;
+    moonLight.shadow.mapSize.height = 2048;
+    moonLight.shadow.camera.near = 1;
+    moonLight.shadow.camera.far = 120;
+    moonLight.shadow.camera.left = -25;
+    moonLight.shadow.camera.right = 25;
+    moonLight.shadow.camera.top = 25;
+    moonLight.shadow.camera.bottom = -25;
+    moonLight.shadow.bias = -0.0003;
+    scene.add(moonLight);
+
+    // Ambient night fill
+    const ambLight = new THREE.AmbientLight(0x131a24, 0.75);
+    scene.add(ambLight);
+
+    // 2. Headlights (Faros del camion cortando la bruma hacia adelante: -Z)
+    const headLeft = new THREE.SpotLight(0xffdfa8, 18, 55, Math.PI / 4, 0.6, 1.2);
+    headLeft.position.set(-0.53, 1.40, -3.20);
+    headLeft.target.position.set(-0.53, 0.40, -35);
+    scene.add(headLeft);
+    scene.add(headLeft.target);
+
+    const headRight = new THREE.SpotLight(0xffdfa8, 18, 55, Math.PI / 4, 0.6, 1.2);
+    headRight.position.set(0.53, 1.40, -3.20);
+    headRight.target.position.set(0.53, 0.40, -35);
+    scene.add(headRight);
+    scene.add(headRight.target);
+
+    // 3. Taillights (Luces rojas traseras iluminando ruedas y barro)
+    const tailL = new THREE.PointLight(0xff2211, 2.5, 6.0);
+    tailL.position.set(-0.78, 0.90, 2.92);
+    scene.add(tailL);
+
+    const tailR = new THREE.PointLight(0xff2211, 2.5, 6.0);
+    tailR.position.set(0.78, 0.90, 2.92);
+    scene.add(tailR);
+
+    // 4. Vintage Military Flashlight (Linterna en L en el piso de la compuerta)
+    const flashLight = new THREE.SpotLight(0xffb25a, 7.5, 6.5, Math.PI / 3.2, 0.55, 1.4);
+    flashLight.position.set(0.68, 1.34, 2.78);
+    flashLight.target.position.set(0.20, 1.24, 2.45);
+    scene.add(flashLight);
+    scene.add(flashLight.target);
+
+    // 5. Distant Military Outpost Warm Sodium Glow
+    const outpostGlow = new THREE.PointLight(0xff8c2b, 45, 90);
+    outpostGlow.position.set(-24, 7.5, -74);
+    scene.add(outpostGlow);
+
+    // ------------------------------------------------------------------------
+    // Procedural Low Ground Fog Particles
+    // ------------------------------------------------------------------------
+    function createGroundMist() {
+      const mistCount = 220;
+      const geom = new THREE.BufferGeometry();
+      const positions = new Float32Array(mistCount * 3);
+      const scales = new Float32Array(mistCount);
+
+      for (let i = 0; i < mistCount; i++) {
+        // Alrededor del camino y la zanja
+        positions[i * 3 + 0] = (Math.random() - 0.5) * 55;
+        positions[i * 3 + 1] = 0.2 + Math.random() * 1.5;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 75;
+        scales[i] = 2.5 + Math.random() * 4.0;
+      }
+      geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geom.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
+
+      // Generar textura suave radial de niebla
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(165, 185, 205, 0.28)');
+      grad.addColorStop(0.4, 'rgba(130, 150, 175, 0.14)');
+      grad.addColorStop(1, 'rgba(10, 15, 20, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      const mistTex = new THREE.CanvasTexture(canvas);
+
+      const mat = new THREE.PointsMaterial({
+        size: 4.5,
+        map: mistTex,
+        transparent: true,
+        blending: THREE.NormalBlending,
+        depthWrite: false,
+        opacity: 0.55
+      });
+
+      const mistPoints = new THREE.Points(geom, mat);
+      scene.add(mistPoints);
+      return mistPoints;
+    }
+    const mistSystem = createGroundMist();
+
+    // ------------------------------------------------------------------------
+    // Interactive Raycasting & Dossier Items
+    // ------------------------------------------------------------------------
+    const interactiveItems = {
+      'PROP_Zapatilla_Flecha_70s': {
+        tag: 'EVIDENCIA #01 // VESTIGIO CIVIL',
+        title: 'ZAPATILLA DE LONA TIPO "FLECHA"',
+        body: 'Calzado icónico de la juventud trabajadora y estudiantil argentina de los años 70. Suela de caucho vulcanizado marrón con vira blanca sucia. Cayó en el entablonado de la compuerta durante la subida violenta de los cautivos.'
+      },
+      'PROP_Libreta_Bolsillo': {
+        tag: 'EVIDENCIA #02 // DOCUMENTO',
+        title: 'LIBRETA DE APUNTES CLANDESTINA',
+        body: 'Cuaderno pequeño de campo con tapa entelada oscura y esquinas dobladas. Contiene anotaciones apresuradas, direcciones y nombres de compañeros antes del allanamiento nocturno.'
+      },
+      'PROP_Linterna_Militar_L': {
+        tag: 'EQUIPAMIENTO #03 // GUARDIA',
+        title: 'LINTERNA DE CODO EN "L" (MX-991/U)',
+        body: 'Linterna militar verde oliva reglamentaria con filtro de filamento ámbar. Abandonada encendida sobre el piso de la caja, proyectando su haz rasante entre las tablas y la compuerta abatida.'
+      },
+      'CAUTIVO_Central': {
+        tag: 'TESTIMONIO #04 // CAUTIVO CENTRAL',
+        title: 'DETENIDO-DESAPARECIDO (EN TRASLADO)',
+        body: 'Figura masculina sentada en el borde exacto de la compuerta. Camisa civil clara con mangas remangadas y manos atadas a la espalda con soga de cáñamo. Cabeza cubierta por saco de arpillera con orificios toscos.'
+      },
+      'PROP_Radio_Campo_1970s': {
+        tag: 'COMUNICACIONES #05 // GRUPO DE TAREAS',
+        title: 'RADIO RECEPTORA DE CAMPAÑA 1970s',
+        body: 'Transceptor militar portátil a válvulas/transistores con dial analógico retroiluminado y microteléfono H-189. Utilizado para coordinar con el centro clandestino antes del ingreso.'
+      },
+      'PROP_Cajon_Municion_1': {
+        tag: 'CARGA #06 // LOGÍSTICA',
+        title: 'CAJÓN DE MUNICIONES Y PERTRECHOS',
+        body: 'Cajón de madera reforzada verde oliva con cantoneras de hierro oxidado y manijas de soga de cáñamo. Empleado para transporte de grilletes y armamento ligero.'
+      }
+    };
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let hoveredObject = null;
+
+    const dossierCard = document.getElementById('dossier-card');
+    const dossierTag = document.getElementById('dossier-tag');
+    const dossierTitle = document.getElementById('dossier-title');
+    const dossierBody = document.getElementById('dossier-body');
+    const dossierClose = document.getElementById('dossier-close');
+
+    function openDossier(data) {
+      dossierTag.innerText = data.tag;
+      dossierTitle.innerText = data.title;
+      dossierBody.innerText = data.body;
+      dossierCard.classList.add('visible');
+    }
+
+    dossierClose.addEventListener('click', () => dossierCard.classList.remove('visible'));
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') dossierCard.classList.remove('visible');
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    window.addEventListener('click', () => {
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      for (let hit of intersects) {
+        let cur = hit.object;
+        while (cur) {
+          if (interactiveItems[cur.name]) {
+            openDossier(interactiveItems[cur.name]);
+            return;
+          }
+          cur = cur.parent;
+        }
+      }
+    });
+
+    // ------------------------------------------------------------------------
+    // Load Assembled 3D Scene GLB
+    // ------------------------------------------------------------------------
+    const loaderBar = document.getElementById('loader-bar');
+    const loaderStatus = document.getElementById('loader-status');
+    const loaderScreen = document.getElementById('loader');
+
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load(
+      './escena1_el_traslado.glb',
+      (gltf) => {
+        const root = gltf.scene;
+
+        root.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            // Ajuste fino de materiales PBR para WebGL
+            if (child.material) {
+              const m = child.material;
+              m.roughness = Math.min(1.0, m.roughness * 1.15);
+              m.envMapIntensity = 0.45;
+
+              // Identificar y enriquecer segun nombre de material
+              const mName = m.name || '';
+              if (mName.includes('Terreno')) {
+                m.roughness = 0.88;
+                m.metalness = 0.05;
+              } else if (mName.includes('Arpillera')) {
+                m.roughness = 0.98;
+                m.color.setHex(0x524230);
+              } else if (mName.includes('Pintura_Oliva')) {
+                m.color.setHex(0x323a26);
+                m.metalness = 0.15;
+              } else if (mName.includes('Lona')) {
+                m.roughness = 0.95;
+                m.color.setHex(0x423d2b);
+              } else if (mName.includes('Flecha_Lona')) {
+                m.color.setHex(0x827a68);
+              } else if (mName.includes('Flecha_Goma')) {
+                m.color.setHex(0xa89e87);
+              } else if (mName.includes('Foco_Sodio') || mName.includes('Ventana_Calida')) {
+                m.emissive = new THREE.Color(0xff8b2c);
+                m.emissiveIntensity = 4.0;
+              } else if (mName.includes('Faro')) {
+                m.emissive = new THREE.Color(0xffdfa0);
+                m.emissiveIntensity = 8.0;
+              } else if (mName.includes('Luz_Trasera')) {
+                m.emissive = new THREE.Color(0xff1808);
+                m.emissiveIntensity = 5.0;
+              }
+            }
+          }
+        });
+
+        scene.add(root);
+
+        // Ocultar pantalla de carga
+        loaderBar.style.width = '100%';
+        loaderStatus.innerText = 'ESCENA ENSAMBLADA';
+        setTimeout(() => loaderScreen.classList.add('hidden'), 500);
+      },
+      (xhr) => {
+        if (xhr.lengthComputable) {
+          const pct = Math.round((xhr.loaded / xhr.total) * 100);
+          loaderBar.style.width = pct + '%';
+          loaderStatus.innerText = `DESCARGANDO MODELO 3D: ${pct}% (${(xhr.loaded / 1048576).toFixed(1)} MB)`;
+        }
+      },
+      (error) => {
+        console.error('Error cargando GLB:', error);
+        loaderStatus.innerText = 'ERROR CARGANDO ESCENA 3D. REINTENTAR.';
+      }
+    );
+
+    // ------------------------------------------------------------------------
+    // Procedural Web Audio API Soundscape (Viento Pampeano y Motor Lejano)
+    // ------------------------------------------------------------------------
+    let audioCtx = null;
+    let audioPlaying = false;
+    let windNode = null;
+    let rumbleNode = null;
+
+    function initAudio() {
+      if (audioCtx) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      // Ruido de viento pampeano filtrado
+      const bufferSize = audioCtx.sampleRate * 2;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(280, audioCtx.currentTime);
+
+      const windGain = audioCtx.createGain();
+      windGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+
+      whiteNoise.connect(filter);
+      filter.connect(windGain);
+      windGain.connect(audioCtx.destination);
+      whiteNoise.start();
+
+      // Oscilador de motor diesel lejano
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(42, audioCtx.currentTime);
+
+      const oscFilter = audioCtx.createBiquadFilter();
+      oscFilter.type = 'lowpass';
+      oscFilter.frequency.setValueAtTime(95, audioCtx.currentTime);
+
+      const oscGain = audioCtx.createGain();
+      oscGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+
+      osc.connect(oscFilter);
+      oscFilter.connect(oscGain);
+      oscGain.connect(audioCtx.destination);
+      osc.start();
+
+      windNode = windGain;
+      rumbleNode = oscGain;
+    }
+
+    const btnAudio = document.getElementById('btn-audio');
+    btnAudio.addEventListener('click', () => {
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      audioPlaying = !audioPlaying;
+      btnAudio.classList.toggle('active', audioPlaying);
+      btnAudio.innerText = audioPlaying ? '🔊 AUDIO: ON' : '🔊 AUDIO: OFF';
+
+      const targetGain = audioPlaying ? 0.22 : 0.0001;
+      const targetRumble = audioPlaying ? 0.09 : 0.0001;
+      windNode.gain.linearRampToValueAtTime(targetGain, audioCtx.currentTime + 1.2);
+      rumbleNode.gain.linearRampToValueAtTime(targetRumble, audioCtx.currentTime + 1.2);
+    });
+
+    // Fullscreen toggle
+    document.getElementById('btn-fs').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // ------------------------------------------------------------------------
+    // Animation Loop
+    // ------------------------------------------------------------------------
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const elapsed = clock.getElapsedTime();
+
+      // Animar niebla rasante suavemente
+      if (mistSystem) {
+        const pos = mistSystem.geometry.attributes.position.array;
+        for (let i = 0; i < pos.length; i += 3) {
+          pos[i + 0] += Math.sin(elapsed * 0.15 + i) * 0.012;
+          pos[i + 2] += delta * 0.45;
+          if (pos[i + 2] > 38) pos[i + 2] = -38;
+        }
+        mistSystem.geometry.attributes.position.needsUpdate = true;
+      }
+
+      // Parpadeo sutil diegetico del foco de la linterna y luces
+      if (flashLight) {
+        flashLight.intensity = 7.5 + Math.sin(elapsed * 9.0) * 0.2 + (Math.random() - 0.5) * 0.15;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
+
